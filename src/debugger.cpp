@@ -8,11 +8,12 @@
 #include "debugger.h"
 
 
-const std::array<std::string, 3> debugger::commandList =
+const std::array<std::string, 4> debugger::commandList =
     {
         "step",
         "print",
-        "continue"
+        "continue",
+        "exit"
     };
 
 debugger::debugger(chip8* chip8)
@@ -23,20 +24,24 @@ debugger::debugger(chip8* chip8)
 void debugger::prompt()
 {
     printf("Yache-Debug > ");
-    /*
-    char* line;
-    size_t lSize;
-    getline(&line, &lSize, stdin);
-    if (line[lSize - 1] == '\n')
-    {
-        line[lSize - 1] = '\0';
-    }
-    char* command = strtok(line, " ");
-    */
-
     std::string line;
     getline(std::cin, line);
     run_command(line);
+}
+
+void debugger::setContinue(bool val)
+{
+    _shouldContinue = val;
+}
+
+bool debugger::shouldContinue()
+{
+    return _shouldContinue;
+}
+
+bool debugger::shouldExit()
+{
+    return _shouldExit;
 }
 
 int debugger::run_command(std::string fullCommand)
@@ -47,27 +52,29 @@ int debugger::run_command(std::string fullCommand)
     std::string command;
     std::getline(is, command, ' ');
 
-    unsigned int index = 10000;
+    DBG_CMD cmd;
     for (int i = 0; i < commandList.size(); i++)
     {
-        printf("%s\n", commandList[i].c_str());
         if (command == commandList[i])
         {
-            index = i;
+            cmd = static_cast<DBG_CMD>(i);
             break;
         }
     }
 
-    switch (index)
+    switch (cmd)
     {
-        case 0:
+        case DBG_CMD::STEP:
             step(is);
             break;
-        case 1:
+        case DBG_CMD::PRINT:
             print(is);
             break;
-        case 2:
+        case DBG_CMD::CONTINUE:
             continue_cmd(is);
+            break;
+        case DBG_CMD::EXIT:
+            exit_cmd(is);
             break;
         default:
             printf("Unknown debug instruction?\n");
@@ -77,9 +84,15 @@ int debugger::run_command(std::string fullCommand)
 int debugger::print(std::istringstream& argv)
 {
     //TODO: Proper debug print
-    bool printPC = false;
-    bool printSP = false;
+    std::array<bool, 6> shouldPrint;
+    std::fill(shouldPrint.begin(), shouldPrint.end(), false);
+
     printf("PC: 0x%X\n", _chip8->pc);
+    printf("SP: 0x%X\n", _chip8->sp);
+    for (int i = 0; i < 16; i++)
+    {
+        printf("V%X: %X", i, _chip8->V[i]);
+    }
 }
 
 int debugger::step(std::istringstream& argv)
@@ -102,6 +115,14 @@ int debugger::step(std::istringstream& argv)
 
 int debugger::continue_cmd(std::istringstream& argv)
 {
-    printf("Welp no idea how to implement this\n");
+    _shouldContinue = true;
+    return EXIT_SUCCESS;
 }
+
+int debugger::exit_cmd(std::istringstream &argv)
+{
+    _shouldExit = true;
+    return EXIT_SUCCESS;
+}
+
 

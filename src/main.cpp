@@ -32,15 +32,19 @@ int main(int argc, char** argv)
 
     debugger* debug = new debugger(mChip8);
 
-    while (true)
+    if (isDebug)
     {
-        if (isDebug)
-        {
-            debug->prompt();
-        }
-        else
+        debug->setContinue(false);
+    }
+
+    while (!debug->shouldExit())
+    {
+        if (debug->shouldContinue())
         {
             mChip8->stepCycle();
+        } else
+        {
+            debug->prompt();
         }
         if (mChip8->drawFlag)
         {
