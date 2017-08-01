@@ -1,12 +1,12 @@
 //
 // Created by andry on 7/28/17.
 //
-#define LOG_LEVEL (7)
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <cstring>
 #include "chip8.h"
-#include "lwlog.h"
+#include "log.h"
 
 chip8::chip8()
 {
@@ -43,77 +43,77 @@ void chip8::stepCycle()
             switch (opcode & 0x000F)
             {
                 case 0x0000: //CLS
-                    lwlog_debug("CLS");
+                    LOG("CLS");
                     display_clear();
                     break;
                 case 0x000E: //RET
-                    lwlog_debug("RET");
+                    LOG("RET");
                     sp--;
                     pc = stack[sp];
                     break;
                 default:
-                    lwlog_err("0x0000: Unknown opcode 0x%X", opcode);
+                    ERR("0x0000: Unknown opcode 0x%X", opcode);
             }
         case 0x1000: //JP addr
-            lwlog_debug("JP 0x%X", addr);
+            LOG("JP 0x%X", addr);
             pc = addr;
             break;
         case 0x2000: //CALL addr
-            lwlog_debug("CALL 0x%X", addr);
+            LOG("CALL 0x%X", addr);
             stack[sp] = pc;
             sp++;
             pc = addr;
             break;
         case 0x3000: //SE Vx, byte
-            lwlog_debug("SE V%X, %X", Vx, byte);
+            LOG("SE V%X, %X", Vx, byte);
             if (V[Vx] == (byte))
             {
                 pc += 2;
             }
             break;
         case 0x4000: //SNE Vx, byte
-            lwlog_debug("SNE V%X, %X", Vx, byte);
+            LOG("SNE V%X, %X", Vx, byte);
             if (V[Vx] != (byte))
             {
                 pc += 2;
             }
             break;
         case 0x5000: //SE Vx, Vy
-            lwlog_debug("SNE V%X, V%X", Vx, Vy);
+            LOG("SNE V%X, V%X", Vx, Vy);
             if (V[Vx] == V[Vy])
             {
                 pc += 2;
             }
             break;
         case 0x6000: //LD Vx, byte
-            lwlog_debug("LD V%X, %X", Vx, byte);
+            LOG("LD V%X, %X", Vx, byte);
             V[Vx] = (byte);
             break;
         case 0x7000: //ADD Vx, byte
-            lwlog_debug("ADD V%X, %X", Vx, byte);
+            LOG("ADD V%X, %X", Vx, byte);
             V[Vx] += (byte);
             break;
         case 0x8000:
             switch (opcode & 0x000F)
             {
                 case 0x0000: //LD Vx, Vy
-                    lwlog_debug("LD V%X, V%X", Vx, Vy);
+                    LOG("LD V%X, V%X", Vx, Vy);
                     V[Vx] = V[Vy];
                     break;
                 case 0x0001: //OR Vx, Vy
-                    lwlog_debug("OR V%X, V%X", Vx, Vy);
+                    LOG("OR V%X, V%X", Vx, Vy);
                     V[Vx] |= V[Vy];
                     break;
                 case 0x0002: //AND Vx, Vy
-                    lwlog_debug("AND V%X, V%X", Vx, Vy);
+                    LOG("AND V%X, V%X", Vx, Vy);
                     V[Vx] &= V[Vy];
                     break;
                 case 0x0003: //XOR Vx, Vy
-                    lwlog_debug("XOR V%X, V%X", Vx, Vy);
+                    LOG("XOR V%X, V%X", Vx, Vy);
                     V[Vx] ^= V[Vy];
                     break;
                 case 0x0004: //ADD Vx, Vy
-                    lwlog_debug("ADD V%X, V%X", Vx, Vy);
+                    LOG("ADD V%X, V%X", Vx, Vy);
                     tmp = V[Vx];
                     V[Vx] += V[Vy];
                     if (V[Vx] < tmp)
@@ -126,7 +126,7 @@ void chip8::stepCycle()
                     }
                     break;
                 case 0x0005: //SUB Vx, Vy
-                    lwlog_debug("SUB V%X, V%X", Vx, Vy);
+                    LOG("SUB V%X, V%X", Vx, Vy);
                     if (V[Vy] > V[Vx])
                     {
                         //VF = !borrow
@@ -139,12 +139,12 @@ void chip8::stepCycle()
                     V[Vx] -= V[Vy];
                     break;
                 case 0x0006: //SHR Vx
-                    lwlog_debug("SHR V%X", Vx);
+                    LOG("SHR V%X", Vx);
                     V[0xF] = V[Vx] & 0x1;
                     V[Vx] >>= 1;
                     break;
                 case 0x0007: //SUBN Vx, Vy
-                    lwlog_debug("SUBN V%X, V%X", Vx, Vy);
+                    LOG("SUBN V%X, V%X", Vx, Vy);
                     V[Vx] = V[Vy] - V[opcode & 0x0F00];
                     if (V[Vx] > V[Vy])
                     {
@@ -156,36 +156,36 @@ void chip8::stepCycle()
                     }
                     break;
                 case 0x000E: //SHL Vx
-                    lwlog_debug("SHL V%X", Vx);
+                    LOG("SHL V%X", Vx);
                     V[0xF] = V[Vx] & 0x8;
                     V[Vx] <<= 1;
                     break;
                 default:
-                    lwlog_err("0x8000: Unknown opcode 0x%X", opcode)
+                    ERR("0x8000: Unknown opcode 0x%X", opcode);
 
             }
             break;
         case 0x9000: //SNE Vx, Vy
-            lwlog_debug("SNE V%X, V%X", Vx, Vy);
+            LOG("SNE V%X, V%X", Vx, Vy);
             if (V[Vx] != V[Vy])
             {
                 pc += 2;
             }
             break;
         case 0xA000: //LD I, addr
-            lwlog_debug("LD I, 0x%X", addr);
+            LOG("LD I, 0x%X", addr);
             I = addr;
             break;
         case 0xB000: //JP V0, addr
-            lwlog_debug("JP V0, 0x%X", addr);
+            LOG("JP V0, 0x%X", addr);
             pc = V[0] + (addr);
             break;
         case 0xC000: //RND Vx, byte
-            lwlog_debug("RND V%X, %X", Vx, byte);
+            LOG("RND V%X, %X", Vx, byte);
             V[Vx] = (uint8_t)(rand() % 256) & (byte);
             break;
         case 0xD000: //DRW Vx, Vy, nibble
-            lwlog_debug("DRW V%X, V%X, %X", Vx, Vy, opcode & 0x000F);
+            LOG("DRW V%X, V%X, %X", Vx, Vy, opcode & 0x000F);
             //TODO: Draw
             break;
         case 0xE000:
@@ -193,25 +193,25 @@ void chip8::stepCycle()
             {
                 //TODO: Check this
                 case 0x009E: //SKP Vx
-                    lwlog_debug("SKP V%X", Vx);
+                    LOG("SKP V%X", Vx);
                     if (key[Vx])
                     {
                         pc += 2;
                     }
                     break;
                 case 0x00A1:
-                    lwlog_debug("SNKP V%X", Vx);
+                    LOG("SNKP V%X", Vx);
                     if (!key[Vx])
                     {
                         pc += 2;
                     }
                     break;
                 default:
-                    lwlog_err("0xE000: Unknown opcode 0x%X", opcode);
+                    ERR("0xE000: Unknown opcode 0x%X", opcode);
             }
             break;
         default:
-            lwlog_err("Unknown opcode 0x%X", opcode)
+            ERR("Unknown opcode 0x%X", opcode);
     }
 
     if (delay_timer > 0)
@@ -233,7 +233,7 @@ void chip8::loadRom(const char* fileName)
     rom = fopen(fileName, "rb");
     if (rom == NULL)
     {
-        lwlog_err("File error while reading");
+        ERR("File error while reading");
         fprintf(stderr, "Err: %s\n", strerror(errno));
         exit(EXIT_FAILURE);
     }

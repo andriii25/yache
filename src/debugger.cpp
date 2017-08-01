@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include "debugger.h"
+#include "log.h"
 
 
 const std::array<std::string, 4> debugger::commandList =
@@ -77,7 +78,7 @@ int debugger::run_command(std::string fullCommand)
             exit_cmd(is);
             break;
         default:
-            printf("Unknown debug instruction?\n");
+            ERR("Unknown debug instruction?");
     }
 }
 
@@ -87,11 +88,11 @@ int debugger::print(std::istringstream& argv)
     std::array<bool, 6> shouldPrint;
     std::fill(shouldPrint.begin(), shouldPrint.end(), false);
 
-    printf("PC: 0x%X\n", _chip8->pc);
-    printf("SP: 0x%X\n", _chip8->sp);
+    LOG("PC: 0x%X", _chip8->pc);
+    LOG("SP: 0x%X", _chip8->sp);
     for (int i = 0; i < 16; i++)
     {
-        printf("V%X: %X", i, _chip8->V[i]);
+        LOG("V%X: %X", i, _chip8->V[i]);
     }
 }
 
