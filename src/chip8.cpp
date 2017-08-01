@@ -32,8 +32,8 @@ void chip8::stepCycle()
 
     uint16_t addr = opcode & 0x0FFF;
     uint8_t byte = opcode & 0x00FF;
-    uint8_t Vx = opcode & 0x0F00 >> 8;
-    uint8_t Vy = opcode & 0x00F0 >> 4;
+    uint8_t Vx = (opcode & 0x0F00) >> 8;
+    uint8_t Vy = (opcode & 0x00F0) >> 4;
     //TODO: maybe a function pointer table
     //TODO: fprintf should be a macro or sth
     uint8_t tmp = 0;
@@ -54,6 +54,7 @@ void chip8::stepCycle()
                 default:
                     ERR("0x0000: Unknown opcode 0x%X", opcode);
             }
+            break;
         case 0x1000: //JP addr
             LOG("JP 0x%X", addr);
             pc = addr;
