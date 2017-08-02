@@ -1,6 +1,7 @@
 #include <getopt.h>
 #include "chip8.h"
 #include "debugger.h"
+#include "chip8_display.h"
 
 
 int main(int argc, char** argv)
@@ -32,13 +33,18 @@ int main(int argc, char** argv)
 
     debugger* debug = new debugger(mChip8);
 
+    chip8_display* display = new chip8_display();
+
+    display->init();
     if (isDebug)
     {
         debug->setContinue(false);
     }
 
-    while (!debug->shouldExit())
+    while (!debug->shouldExit() && !display->shouldClose())
     {
+        display->render();
+
         if (debug->shouldContinue())
         {
             mChip8->stepCycle();
@@ -46,10 +52,14 @@ int main(int argc, char** argv)
         {
             debug->prompt();
         }
+
+
         if (mChip8->drawFlag)
         {
-            //TODO: Draw graphics
+            display->update(mChip8->getGraphics());
         }
+
+        display->swapBuffers();
 
     }
 

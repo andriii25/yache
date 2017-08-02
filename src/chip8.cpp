@@ -19,10 +19,16 @@ chip8::chip8()
     std::fill(stack.begin(), stack.end(), 0);
     std::fill(V.begin(), V.end(), 0);
     std::fill(memory.begin(), memory.end(), 0);
+    std::copy(fontset.begin(), fontset.end(), memory.begin() + 0x50);
     srand(time(NULL));
 
 
 }
+
+std::array<uint8_t, 64*32>& chip8::getGraphics()
+{
+    return gfx;
+};
 
 void chip8::stepCycle()
 {
@@ -188,7 +194,25 @@ void chip8::stepCycle()
             break;
         case 0xD000: //DRW Vx, Vy, nibble
             LOG("DRW V%X, V%X, %X", Vx, Vy, opcode & 0x000F);
-            //TODO: Draw
+            for (int i = V[Vy]; i < V[Vy] + (opcode & 0x0010); i++)
+            {
+                int yOffset = i - V[Vy];
+                uint8_t line = memory[I + yOffset];
+                for (int j = V[Vx]; j < V[Vx] + 8; j++)
+                {
+                    int xOffset = j - V[Vx];
+                    if (line & (0x80 >> xOffset))
+                    {
+                        if (gfx[i * 64 + j])
+                        {
+                            V[0xF] = 1;
+                        }
+                        gfx[i * 64 + j] ^= 1;
+                    }
+
+                }
+            }
+            drawFlag = true;
             break;
         case 0xE000:
             switch (opcode & 0x00FF)
