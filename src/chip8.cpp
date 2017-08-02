@@ -43,6 +43,7 @@ void chip8::stepCycle()
     //TODO: maybe a function pointer table
     //TODO: fprintf should be a macro or sth
     uint16_t tmp = 0;
+    uint8_t bcd_tmp = 0;
     switch (opcode & 0xF000)
     {
         case 0x0000:
@@ -215,17 +216,17 @@ void chip8::stepCycle()
             drawFlag = true;
             break;
         case 0xE000:
-            switch (opcode & 0x00FF)
+            switch (opcode & 0x000F)
             {
                 //TODO: Check this
-                case 0x009E: //SKP Vx
+                case 0x000E: //SKP Vx
                     LOG("SKP V%X", Vx);
                     if (key[Vx])
                     {
                         pc += 2;
                     }
                     break;
-                case 0x00A1:
+                case 0x0001:
                     LOG("SNKP V%X", Vx);
                     if (!key[Vx])
                     {
@@ -234,6 +235,62 @@ void chip8::stepCycle()
                     break;
                 default:
                     ERR("0xE000: Unknown opcode 0x%X", opcode);
+            }
+            break;
+        case 0xF000:
+            switch (opcode & 0x00FF)
+            {
+                case 0x0007: //LD Vx, DT
+                    LOG("LD V%X, DT", Vx);
+                    V[Vx] = delay_timer;
+                    break;
+                case 0x000A: //LD Vx, K
+                    LOG("LD V%X, [key]", Vx);
+                    //TODO: Input
+                    break;
+                case 0x0015: //LD DT, Vx
+                    LOG("LD DT, V%X", Vx);
+                    delay_timer = V[Vx];
+                    break;
+                case 0x0018: //LD ST, Vx
+                    LOG("LD ST, V%X", Vx);
+                    sound_timer = V[Vx];
+                    break;
+                case 0x001E: //ADD I, Vx
+                    LOG("ADD I, V%X", Vx);
+                    I += V[Vx];
+                    break;
+                case 0x0029: //LD F, Vx
+                    LOG("LD F, V%X", Vx);
+                    I = 0x50 + V[Vx] * 5;
+                    break;
+                case 0x0033: //LD B, Vx
+                    LOG("LD B, V%X", Vx);
+                    bcd_tmp = V[Vx];
+                    memory[I + 2] = bcd_tmp % 10; bcd_tmp / 10;
+                    memory[I + 1] = bcd_tmp % 10; bcd_tmp / 10;
+                    memory[I] = bcd_tmp % 10;
+                    break;
+                case 0x0055: //LD [I], Vx
+                    LOG("LD 0x%X, V%X", I, Vx);
+                    for (int i = 0; i <= Vx; i++)
+                    {
+                        memory[I + i] = V[i];
+                    }
+                    I += Vx + 1;
+                    break;
+                case 0x0065: //LD Vx, [I]
+                    LOG("LD V%X, 0x%X", Vx, I);
+                    for (int i = I; i <= I + Vx; i++)
+                    {
+                        int vOffset = i - I;
+                        V[vOffset] = memory[i];
+                    }
+                    I += Vx + 1;
+                    break;
+                default:
+                    ERR("0x000F: Unknown opcode 0x%X", opcode);
+
             }
             break;
         default:
