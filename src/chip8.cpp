@@ -36,7 +36,7 @@ void chip8::stepCycle()
     uint8_t Vy = (opcode & 0x00F0) >> 4;
     //TODO: maybe a function pointer table
     //TODO: fprintf should be a macro or sth
-    uint8_t tmp = 0;
+    uint16_t tmp = 0;
     switch (opcode & 0xF000)
     {
         case 0x0000:
@@ -67,14 +67,14 @@ void chip8::stepCycle()
             break;
         case 0x3000: //SE Vx, byte
             LOG("SE V%X, %X", Vx, byte);
-            if (V[Vx] == (byte))
+            if (V[Vx] == byte)
             {
                 pc += 2;
             }
             break;
         case 0x4000: //SNE Vx, byte
             LOG("SNE V%X, %X", Vx, byte);
-            if (V[Vx] != (byte))
+            if (V[Vx] != byte)
             {
                 pc += 2;
             }
@@ -88,11 +88,11 @@ void chip8::stepCycle()
             break;
         case 0x6000: //LD Vx, byte
             LOG("LD V%X, %X", Vx, byte);
-            V[Vx] = (byte);
+            V[Vx] = byte;
             break;
         case 0x7000: //ADD Vx, byte
             LOG("ADD V%X, %X", Vx, byte);
-            V[Vx] += (byte);
+            V[Vx] += byte;
             break;
         case 0x8000:
             switch (opcode & 0x000F)
@@ -115,9 +115,9 @@ void chip8::stepCycle()
                     break;
                 case 0x0004: //ADD Vx, Vy
                     LOG("ADD V%X, V%X", Vx, Vy);
-                    tmp = V[Vx];
-                    V[Vx] += V[Vy];
-                    if (V[Vx] < tmp)
+                    //TODO: Revise this
+                    tmp = V[Vx] + V[Vy];
+                    if (tmp & 0xFF00)
                     {
                         V[0xF] = 1;
                     }
@@ -125,6 +125,7 @@ void chip8::stepCycle()
                     {
                         V[0xF] = 0;
                     }
+                    V[Vx] = tmp & 0x00FF;
                     break;
                 case 0x0005: //SUB Vx, Vy
                     LOG("SUB V%X, V%X", Vx, Vy);
@@ -146,7 +147,7 @@ void chip8::stepCycle()
                     break;
                 case 0x0007: //SUBN Vx, Vy
                     LOG("SUBN V%X, V%X", Vx, Vy);
-                    V[Vx] = V[Vy] - V[opcode & 0x0F00];
+                    V[Vx] = V[Vy] - V[Vx];
                     if (V[Vx] > V[Vy])
                     {
                         V[0xF] = 0;
@@ -183,7 +184,7 @@ void chip8::stepCycle()
             break;
         case 0xC000: //RND Vx, byte
             LOG("RND V%X, %X", Vx, byte);
-            V[Vx] = (uint8_t)(rand() % 256) & (byte);
+            V[Vx] = (uint8_t)(rand() % 256) & byte;
             break;
         case 0xD000: //DRW Vx, Vy, nibble
             LOG("DRW V%X, V%X, %X", Vx, Vy, opcode & 0x000F);
