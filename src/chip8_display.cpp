@@ -121,9 +121,12 @@ void chip8_display::swapBuffers()
 
 void chip8_display::update(const std::array<uint8_t, 64 * 32> &gfx)
 {
-    for (int i = 0; i < 64 * 32; i++)
+    for (int i = 0; i < 32; i++)
     {
-        texData[i] = colorMap[gfx[i]];
+        for (int j = 0; j < 64; j++)
+        {
+            texData[(32 - 1 - i) * 64 + j] = colorMap[gfx[i * 64 + j]];
+        }
     }
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 64, 32, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, texData.data());
