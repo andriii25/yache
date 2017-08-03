@@ -43,7 +43,6 @@ int main(int argc, char** argv)
 
     while (!debug->shouldExit() && !display->shouldClose())
     {
-        display->render();
 
         if (debug->shouldContinue())
         {
@@ -58,6 +57,8 @@ int main(int argc, char** argv)
         {
             display->update(mChip8->getGraphics());
         }
+
+        display->render();
 
         display->swapBuffers();
 

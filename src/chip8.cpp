@@ -35,6 +35,7 @@ void chip8::stepCycle()
     opcode = memory[pc] << 8 | memory[pc + 1];
 
     pc += 2;
+    drawFlag = false;
 
     uint16_t addr = opcode & 0x0FFF;
     uint8_t byte = opcode & 0x00FF;
