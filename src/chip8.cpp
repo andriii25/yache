@@ -148,10 +148,10 @@ void chip8::stepCycle()
                     }
                     V[Vx] -= V[Vy];
                     break;
-                case 0x0006: //SHR Vx
-                    LOG("SHR V%X", Vx);
-                    V[0xF] = V[Vx] & 0x1;
-                    V[Vx] >>= 1;
+                case 0x0006: //SHR Vx, Vy
+                    LOG("SHR V%X, V%X", Vx, Vy);
+                    V[0xF] = V[Vy] & 0x1;
+                    V[Vx] = V[Vy] >> 1;
                     break;
                 case 0x0007: //SUBN Vx, Vy
                     LOG("SUBN V%X, V%X", Vx, Vy);
@@ -165,10 +165,10 @@ void chip8::stepCycle()
                         V[0xF] = 1;
                     }
                     break;
-                case 0x000E: //SHL Vx
-                    LOG("SHL V%X", Vx);
-                    V[0xF] = V[Vx] & 0x8;
-                    V[Vx] <<= 1;
+                case 0x000E: //SHL Vx, Vy
+                    LOG("SHL V%X, V%X", Vx, Vy);
+                    V[0xF] = (V[Vy] & 0x80) >> 7;
+                    V[Vx] = V[Vy] << 1;
                     break;
                 default:
                     ERR("0x8000: Unknown opcode 0x%X", opcode);
@@ -268,8 +268,8 @@ void chip8::stepCycle()
                 case 0x0033: //LD B, Vx
                     LOG("LD B, V%X", Vx);
                     bcd_tmp = V[Vx];
-                    memory[I + 2] = bcd_tmp % 10; bcd_tmp / 10;
-                    memory[I + 1] = bcd_tmp % 10; bcd_tmp / 10;
+                    memory[I + 2] = bcd_tmp % 10; bcd_tmp /= 10;
+                    memory[I + 1] = bcd_tmp % 10; bcd_tmp /= 10;
                     memory[I] = bcd_tmp % 10;
                     break;
                 case 0x0055: //LD [I], Vx
