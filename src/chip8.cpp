@@ -195,7 +195,7 @@ void chip8::stepCycle()
             break;
         case 0xD000: //DRW Vx, Vy, nibble
             LOG("DRW V%X, V%X, %X", Vx, Vy, opcode & 0x000F);
-            for (int i = V[Vy]; i < V[Vy] + (opcode & 0x0010); i++)
+            for (int i = V[Vy]; i < V[Vy] + (opcode & 0x000F); i++)
             {
                 int yOffset = i - V[Vy];
                 uint8_t line = memory[I + yOffset];
