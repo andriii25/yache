@@ -93,6 +93,7 @@ void chip8_display::init()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 
 }
@@ -104,10 +105,11 @@ bool chip8_display::shouldClose()
 
 void chip8_display::render()
 {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    processInput();
 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     shader->use();
     glBindVertexArray(VAO);
@@ -117,6 +119,7 @@ void chip8_display::render()
 void chip8_display::swapBuffers()
 {
     glfwSwapBuffers(window);
+    glfwPollEvents();
 }
 
 void chip8_display::update(const std::array<uint8_t, 64 * 32> &gfx)
@@ -129,8 +132,16 @@ void chip8_display::update(const std::array<uint8_t, 64 * 32> &gfx)
         }
     }
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 64, 32, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, texData.data());
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 64, 32, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, texData.data());
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void chip8_display::processInput()
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
 }
 
 void chip8_display::framebuffer_size_callback(GLFWwindow* window, int width, int height)

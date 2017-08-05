@@ -48,7 +48,7 @@ private:
 
     std::array<uint32_t, 2> colorMap =
         {
-            0x00000000,
+            0x000000FF,
             0xFFFFFFFF
         };
     std::array<uint32_t, 64 * 32> texData;
@@ -56,5 +56,6 @@ private:
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
     static void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id,
                                        GLenum severity, GLsizei length, const GLchar *message, const void* userParam);
+    void processInput();
 };
 

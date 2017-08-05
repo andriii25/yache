@@ -1,9 +1,10 @@
 #include <getopt.h>
+#include <chrono>
 #include "chip8.h"
 #include "debugger.h"
 #include "chip8_display.h"
 
-
+//typedef std::chrono::high_resolution_clock Clock;
 int main(int argc, char** argv)
 {
     //TODO OpenGL and sound stuff (imgui?)
@@ -28,19 +29,17 @@ int main(int argc, char** argv)
     {
         return EXIT_FAILURE;
     }
-    chip8* mChip8 = new chip8();
+    chip8 *mChip8 = new chip8();
     mChip8->loadRom(argv[optind]);
 
-    debugger* debug = new debugger(mChip8);
+    debugger *debug = new debugger(mChip8);
 
-    chip8_display* display = new chip8_display();
-
+    chip8_display *display = new chip8_display();
     display->init();
     if (isDebug)
     {
         debug->setContinue(false);
     }
-
     while (!debug->shouldExit() && !display->shouldClose())
     {
 
@@ -59,7 +58,6 @@ int main(int argc, char** argv)
         }
 
         display->render();
-
         display->swapBuffers();
 
     }
