@@ -44,5 +44,5 @@ add_custom_command(
         TARGET ${PROJECT_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/shaders
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/shader
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/shaders
         )
