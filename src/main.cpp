@@ -1,10 +1,8 @@
 #include <getopt.h>
-#include <chrono>
 #include "chip8.h"
 #include "debugger.h"
 #include "chip8_display.h"
 
-//typedef std::chrono::high_resolution_clock Clock;
 int main(int argc, char** argv)
 {
     //TODO OpenGL and sound stuff (imgui?)
@@ -45,20 +43,24 @@ int main(int argc, char** argv)
 
         if (debug->shouldContinue())
         {
-            mChip8->stepCycle();
+            for (int i = 0; i < 1; i++)
+            {
+                mChip8->stepCycle();
+            }
         } else
         {
             debug->prompt();
         }
 
 
+        //TODO: Link this to monitor refresh rate or at least a fixed FPS
         if (mChip8->drawFlag)
         {
             display->update(mChip8->getGraphics());
+            display->render();
+            display->swapBuffers();
         }
 
-        display->render();
-        display->swapBuffers();
 
     }
 
