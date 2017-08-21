@@ -2,6 +2,8 @@
 
 Yet Another Chip-8 Emulator
 
+This is currently a work in progress, no input and sound support at the moment.
+
 Built with OpenGL.
 
 ## Build
