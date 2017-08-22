@@ -13,9 +13,9 @@ public:
     chip8();
     void stepCycle();
     void loadRom(const char* fileName);
-    void setKeys();
 
     std::array<uint8_t, 64*32>& getGraphics();
+    void setKeys(std::array<bool, 16> key);
 
 private:
     static const int MEMORY_SIZE = 4096;
@@ -35,7 +35,7 @@ private:
     uint8_t delay_timer;
     uint8_t sound_timer;
 
-    std::array<uint8_t, 16> key;
+    std::array<bool, 16> keys;
     FILE* rom;
 
     std::array<uint8_t, 80> fontset

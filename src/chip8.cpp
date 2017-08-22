@@ -28,8 +28,12 @@ chip8::chip8()
 std::array<uint8_t, 64*32>& chip8::getGraphics()
 {
     return gfx;
-};
+}
 
+void chip8::setKeys(std::array<bool, 16> key)
+{
+    keys = key;
+}
 void chip8::stepCycle()
 {
     opcode = memory[pc] << 8 | memory[pc + 1];
@@ -222,14 +226,14 @@ void chip8::stepCycle()
                 //TODO: Check this
                 case 0x000E: //SKP Vx
                     LOG("SKP V%X", Vx);
-                    if (key[Vx])
+                    if (keys[V[Vx]])
                     {
                         pc += 2;
                     }
                     break;
-                case 0x0001:
+                case 0x0001: //SNKP Vx
                     LOG("SNKP V%X", Vx);
-                    if (!key[Vx])
+                    if (!keys[V[Vx]])
                     {
                         pc += 2;
                     }

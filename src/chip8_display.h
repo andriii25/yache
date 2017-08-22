@@ -11,6 +11,7 @@
 class chip8_display
 {
 public:
+    chip8_display(GLFWwindow* glWindow);
     ~chip8_display();
 
     void init();
@@ -18,7 +19,6 @@ public:
     void render();
     void swapBuffers();
 
-    bool shouldClose();
 
 private:
     Shader* shader;
@@ -56,6 +56,5 @@ private:
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
     static void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id,
                                        GLenum severity, GLsizei length, const GLchar *message, const void* userParam);
-    void processInput();
 };
 

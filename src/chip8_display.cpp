@@ -5,6 +5,10 @@
 #include "log.h"
 #include "shader.h"
 
+chip8_display::chip8_display(GLFWwindow *glWindow)
+{
+    window = glWindow;
+}
 
 chip8_display::~chip8_display()
 {
@@ -22,20 +26,7 @@ chip8_display::~chip8_display()
 void chip8_display::init()
 {
     std::fill(texData.begin(), texData.end(), 0xFFFFFFFF);
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    //glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-
-    window = glfwCreateWindow(WIDTH, HEIGHT, "Yache", nullptr, nullptr);
-
     //TODO: Better error checking
-    if (window == nullptr)
-    {
-        ERR("Failed to create OpenGL context");
-    }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, chip8_display::framebuffer_size_callback);
 
@@ -98,15 +89,8 @@ void chip8_display::init()
 
 }
 
-bool chip8_display::shouldClose()
-{
-    return (bool)(glfwWindowShouldClose(window));
-}
-
 void chip8_display::render()
 {
-    processInput();
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glActiveTexture(GL_TEXTURE0);
@@ -119,7 +103,6 @@ void chip8_display::render()
 void chip8_display::swapBuffers()
 {
     glfwSwapBuffers(window);
-    glfwPollEvents();
 }
 
 void chip8_display::update(const std::array<uint8_t, 64 * 32> &gfx)
@@ -134,14 +117,6 @@ void chip8_display::update(const std::array<uint8_t, 64 * 32> &gfx)
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 64, 32, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, texData.data());
     glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void chip8_display::processInput()
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, true);
-    }
 }
 
 void chip8_display::framebuffer_size_callback(GLFWwindow* window, int width, int height)

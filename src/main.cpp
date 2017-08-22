@@ -2,6 +2,8 @@
 #include "chip8.h"
 #include "debugger.h"
 #include "chip8_display.h"
+#include "chip8_input.h"
+#include "log.h"
 
 int main(int argc, char** argv)
 {
@@ -32,18 +34,35 @@ int main(int argc, char** argv)
 
     debugger *debug = new debugger(mChip8);
 
-    chip8_display *display = new chip8_display();
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    //glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+
+    GLFWwindow* window = glfwCreateWindow(960, 480, "Yache", nullptr, nullptr);
+    if (window == nullptr)
+    {
+        ERR("Failed to create OpenGL context");
+    }
+
+    chip8_display *display = new chip8_display(window);
     display->init();
+
+    chip8_input *input = new chip8_input(window);
     if (isDebug)
     {
         debug->setContinue(false);
     }
-    while (!debug->shouldExit() && !display->shouldClose())
+
+    bool shouldClose = false;
+    while (!shouldClose)
     {
 
         if (debug->shouldContinue())
         {
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 6; i++)
             {
                 mChip8->stepCycle();
             }
@@ -60,9 +79,13 @@ int main(int argc, char** argv)
             display->render();
             display->swapBuffers();
         }
+        input->pollInput();
 
+        mChip8->setKeys(input->getKeys());
+        shouldClose = input->getShouldClose() || debug->shouldExit();
 
     }
+    glfwSetWindowShouldClose(window, true);
 
     return 0;
 }
