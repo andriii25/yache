@@ -29,7 +29,12 @@ find_package(X11 REQUIRED)
 #find_package(SDL2 REQUIRED)
 
 # TODO: Windows probably doesn't like this
-set (LIBS glfw X11 Xrandr Xinerama Xi Xxf86vm Xcursor GL dl)
+set (LIBS
+        glfw
+        ${X11_LIBRARIES}
+        ${OPENGL_LIBRARIES}
+        ${CMAKE_DL_LIBS}
+        )
 include_directories(
         include
         ${OPENGL_INCLUDE_DIRS}
