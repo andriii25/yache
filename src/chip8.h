@@ -35,6 +35,10 @@ private:
     uint8_t delay_timer;
     uint8_t sound_timer;
 
+    bool isWaitingForKey = false;
+    uint8_t lastPressed = 0x10;
+    uint8_t Vkey = 0x10;
+
     std::array<bool, 16> keys;
     FILE* rom;
 

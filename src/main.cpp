@@ -1,4 +1,5 @@
 #include <getopt.h>
+#include <chrono>
 #include "chip8.h"
 #include "debugger.h"
 #include "chip8_display.h"
@@ -57,15 +58,26 @@ int main(int argc, char** argv)
     }
 
     bool shouldClose = false;
+
+    auto tick = std::chrono::milliseconds(16);
+    auto current = std::chrono::high_resolution_clock::now();
+    int freq = 1000;
+    int cyclesPerFrame = freq / 60;
+    int cyclesLeft = cyclesPerFrame;
+    int count = 0;
     while (!shouldClose)
     {
 
         if (debug->shouldContinue())
         {
-            for (int i = 0; i < 6; i++)
+
+            if (cyclesLeft)
             {
                 mChip8->stepCycle();
+                count++;
+                cyclesLeft--;
             }
+
         } else
         {
             debug->prompt();
@@ -76,8 +88,15 @@ int main(int argc, char** argv)
         if (mChip8->drawFlag)
         {
             display->update(mChip8->getGraphics());
+        }
+        if (current + tick < std::chrono::high_resolution_clock::now())
+        {
+            //printf("*****%i cycle/frame\n", count);
+            count = 0;
             display->render();
             display->swapBuffers();
+            current = std::chrono::high_resolution_clock::now();
+            cyclesLeft = cyclesPerFrame;
         }
         input->pollInput();
 

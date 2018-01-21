@@ -36,6 +36,12 @@ void chip8::setKeys(std::array<bool, 16> key)
 }
 void chip8::stepCycle()
 {
+    if (lastPressed != 0x10)
+    {
+        V[Vkey] = lastPressed;
+        lastPressed = 0x10;
+        isWaitingForKey = false;
+    }
     opcode = memory[pc] << 8 | memory[pc + 1];
 
     pc += 2;
@@ -252,6 +258,8 @@ void chip8::stepCycle()
                 case 0x000A: //LD Vx, K
                     LOG("LD V%X, [key]", Vx);
                     //TODO: Input
+                    isWaitingForKey = true;
+                    Vkey = Vx;
                     break;
                 case 0x0015: //LD DT, Vx
                     LOG("LD DT, V%X", Vx);
