@@ -2,7 +2,7 @@
 
 Yet Another Chip-8 Emulator
 
-This is currently a work in progress, no input and sound support at the moment.
+This is currently a work in progress, with basic input and no sound support at the moment.
 
 Built with OpenGL.
 
@@ -29,14 +29,38 @@ For example using the PONG rom in the roms folder
 ```
 ./yache ../roms/PONG
 ```
+### Input
 
 Exit the program with the ESC key.
 
+The keymap is currently hard-coded with following values:
+
+| CHIP Keyboard | Keymap |
+|:-------------:|:------:|
+| 1 | 1 |
+| 2 | 2 |
+| 3 | 3 |
+| A | 4 |
+| 4 | Q |
+| 5 | W |
+| 6 | E |
+| B | R |
+| 7 | A |
+| 8 | S |
+| 9 | D |
+| C | F |
+| D | Z |
+| 0 | X |
+| E | C |
+| F | V |
+
+
 ### Options
 
-| Option | Functionality                      |
-|--------|------------------------------------|
-| -d     | Running the game with the debugger |
+| Option        | Functionality                      |
+|---------------|------------------------------------|
+| -d            | Running the game with the debugger |
+| -f [frequency]| Set CPU frequency                  |
 
 ## Debugger commands
 
