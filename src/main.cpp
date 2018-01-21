@@ -6,6 +6,12 @@
 #include "chip8_input.h"
 #include "log.h"
 
+void printUsage()
+{
+    ERR("Usage: ./yache [-df] [file]\n"
+            "Example: ./yache ../roms/PONG\n");
+}
+
 int main(int argc, char** argv)
 {
     //TODO OpenGL and sound stuff (imgui?)
@@ -14,20 +20,36 @@ int main(int argc, char** argv)
 
 
     bool isDebug = false;
+    int freq = 1000;
     int c;
-    while ((c = getopt(argc, argv, "d")) != -1)
+    while ((c = getopt(argc, argv, "f:d")) != -1)
     {
         switch (c)
         {
             case 'd':
                 isDebug = true;
                 break;
+            case 'f':
+                freq = strtoll(optarg, nullptr, 10);
+                break;
+            case '?':
+                if (optopt == 'f')
+                {
+                    ERR("Option -%c requires an argument.\n", optopt);
+                } else
+                {
+                    ERR("Unknown option character -%c", optopt);
+                }
+                printUsage();
+                return EINVAL;
             default:
                 return EINVAL;
         }
     }
     if (optind == argc)
     {
+        ERR("Too few arguments.\n");
+        printUsage();
         return EXIT_FAILURE;
     }
     chip8 *mChip8 = new chip8();
@@ -61,7 +83,6 @@ int main(int argc, char** argv)
 
     auto tick = std::chrono::milliseconds(16);
     auto current = std::chrono::high_resolution_clock::now();
-    int freq = 1000;
     int cyclesPerFrame = freq / 60;
     int cyclesLeft = cyclesPerFrame;
     int count = 0;
