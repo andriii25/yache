@@ -29,6 +29,13 @@ For example using the PONG rom in the roms folder
 ```
 ./yache ../roms/PONG
 ```
+### Options
+
+| Option        | Functionality                      |
+|---------------|------------------------------------|
+| -d            | Running the game with the debugger |
+| -f [frequency]| Set CPU frequency                  |
+
 ### Input
 
 Exit the program with the ESC key.
@@ -53,14 +60,6 @@ The keymap is currently hard-coded with following values:
 | 0 | X |
 | E | C |
 | F | V |
-
-
-### Options
-
-| Option        | Functionality                      |
-|---------------|------------------------------------|
-| -d            | Running the game with the debugger |
-| -f [frequency]| Set CPU frequency                  |
 
 ## Debugger commands
 
