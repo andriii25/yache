@@ -1,10 +1,10 @@
 #include <getopt.h>
 #include <chrono>
 #include "chip8.h"
-#include "debugger.h"
 #include "chip8_display.h"
 #include "chip8_input.h"
 #include "log.h"
+#include "gdbstub.h"
 
 void printUsage()
 {
@@ -55,7 +55,8 @@ int main(int argc, char** argv)
     chip8 *mChip8 = new chip8();
     mChip8->loadRom(argv[optind]);
 
-    debugger *debug = new debugger(mChip8);
+
+    gdbstub *gdb = new gdbstub(cpu);
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -76,8 +77,10 @@ int main(int argc, char** argv)
     chip8_input *input = new chip8_input(window);
     if (isDebug)
     {
-        debug->setContinue(false);
+        //debug->setContinue(false);
+        gdb->init();
     }
+
 
     bool shouldClose = false;
 
@@ -86,11 +89,14 @@ int main(int argc, char** argv)
     int cyclesPerFrame = freq / 60;
     int cyclesLeft = cyclesPerFrame;
     int count = 0;
+
     while (!shouldClose)
     {
 
+        /*
         if (debug->shouldContinue())
         {
+        */
 
             if (cyclesLeft)
             {
@@ -99,11 +105,12 @@ int main(int argc, char** argv)
                 cyclesLeft--;
             }
 
+        /*
         } else
         {
             debug->prompt();
         }
-
+        */
 
         //TODO: Link this to monitor refresh rate or at least a fixed FPS
         if (mChip8->drawFlag)
