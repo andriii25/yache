@@ -52,8 +52,9 @@ int main(int argc, char** argv)
         printUsage();
         return EXIT_FAILURE;
     }
-    chip8 *mChip8 = new chip8();
-    mChip8->loadRom(argv[optind]);
+    chip8 *cpu = new chip8();
+    cpu->loadRom(argv[optind]);
+    debugger *debug = new debugger(cpu);
 
     debugger *debug = new debugger(mChip8);
 
@@ -94,7 +95,7 @@ int main(int argc, char** argv)
 
             if (cyclesLeft)
             {
-                mChip8->stepCycle();
+                cpu->stepCycle();
                 count++;
                 cyclesLeft--;
             }
@@ -106,9 +107,9 @@ int main(int argc, char** argv)
 
 
         //TODO: Link this to monitor refresh rate or at least a fixed FPS
-        if (mChip8->drawFlag)
+        if (cpu->drawFlag)
         {
-            display->update(mChip8->getGraphics());
+            display->update(cpu->getGraphics());
         }
         if (current + tick < std::chrono::high_resolution_clock::now())
         {
@@ -121,8 +122,8 @@ int main(int argc, char** argv)
         }
         input->pollInput();
 
-        mChip8->setKeys(input->getKeys());
-        shouldClose = input->getShouldClose() || debug->shouldExit();
+        cpu->setKeys(input->getKeys());
+        shouldClose = input->getShouldClose();// || debug->shouldExit();
 
     }
     glfwSetWindowShouldClose(window, true);

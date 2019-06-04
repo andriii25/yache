@@ -20,8 +20,7 @@ chip8::chip8()
     std::fill(V.begin(), V.end(), 0);
     std::fill(memory.begin(), memory.end(), 0);
     std::copy(fontset.begin(), fontset.end(), memory.begin() + 0x50);
-    srand(time(NULL));
-
+    srand(time(NULL)); //TODO: C++ style better random
 
 }
 

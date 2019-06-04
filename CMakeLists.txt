@@ -19,7 +19,9 @@ set(SOURCE_FILES
 #       src/minifb_display.cpp
 #       src/minifb_display.h
         src/chip8_input.cpp
-        src/chip8_input.h)
+        src/chip8_input.h
+        src/gdbstub.cpp
+        src/gdbstub.h)
 
 add_executable(yache ${SOURCE_FILES})
 
