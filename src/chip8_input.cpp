@@ -8,6 +8,16 @@
 chip8_input::chip8_input(GLFWwindow *glWindow)
 {
     window = glWindow;
+
+
+    // Hack to use the member function as a callback
+    glfwSetWindowUserPointer(window, this);
+    auto func = [](GLFWwindow* wind)
+    {
+        static_cast<chip8_input*>(glfwGetWindowUserPointer(wind))->setShouldClose();
+    };
+    glfwSetWindowCloseCallback(window, func);
+
 }
 
 bool chip8_input::getShouldClose()
@@ -21,7 +31,7 @@ void chip8_input::pollInput()
     std::fill(keys.begin(), keys.end(), false);
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
-        shouldClose = true;
+        setShouldClose();
     }
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
     {
@@ -92,4 +102,10 @@ void chip8_input::pollInput()
 std::array<bool, 16> chip8_input::getKeys()
 {
     return keys;
+}
+
+void chip8_input::setShouldClose() {
+
+    shouldClose = true;
+
 }

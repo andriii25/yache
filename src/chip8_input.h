@@ -10,6 +10,7 @@ public:
     void pollInput();
 
     bool getShouldClose();
+    void setShouldClose();
 
 private:
     bool shouldClose = false;
