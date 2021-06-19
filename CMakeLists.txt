@@ -5,6 +5,12 @@ set (CMAKE_MODULE_PATH $(PROJECT_SOURCE_DIR)/cmake)
 
 set(CMAKE_CXX_STANDARD 11)
 
+if (WIN32)
+        set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+        set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+        set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+endif()
+
 set(SOURCE_FILES
         src/main.cpp
         src/chip8.cpp
@@ -23,12 +29,18 @@ set(SOURCE_FILES
 
 add_executable(yache ${SOURCE_FILES})
 
-find_package(glfw3 3.2 REQUIRED)
+if (UNIX)
+        find_package(glfw3 3.2 REQUIRED)
+endif()
+
+if (WIN32)
+        add_subdirectory(include/glfw-3.3.4)
+endif()
+
 find_package(OpenGL REQUIRED)
 add_definitions(${OPENGL_DEFINITIONS})
 find_package(X11 REQUIRED)
 #find_package(SDL2 REQUIRED)
-
 # TODO: Windows probably doesn't like this
 set (LIBS
         glfw

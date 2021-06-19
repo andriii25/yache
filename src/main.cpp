@@ -56,7 +56,6 @@ int main(int argc, char** argv)
     cpu->loadRom(argv[optind]);
     debugger *debug = new debugger(cpu);
 
-    debugger *debug = new debugger(mChip8);
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
