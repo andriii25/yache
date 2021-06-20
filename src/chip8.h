@@ -16,6 +16,8 @@ public:
 
     std::array<uint8_t, 64*32>& getGraphics();
     void setKeys(std::array<bool, 16> key);
+    void setLoadStoreQuirk(bool loadStoreQuirk);
+    void setShiftQuirk(bool shiftQuirk);
 
 private:
     static const int MEMORY_SIZE = 4096;
@@ -61,6 +63,9 @@ private:
             0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
             0xF0, 0x80, 0xF0, 0x80, 0x80  // F
         };
+
+    bool load_store_quirk = false;
+    bool shift_quirk = false;
 
     void display_clear();
 

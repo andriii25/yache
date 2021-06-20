@@ -159,8 +159,16 @@ void chip8::stepCycle()
                     break;
                 case 0x0006: //SHR Vx, Vy
                     LOG("SHR V%X, V%X", Vx, Vy);
-                    V[0xF] = V[Vy] & 0x1;
-                    V[Vx] = V[Vy] >> 1;
+                    if (shift_quirk)
+                    {
+                        V[0xF] = V[Vx] & 0x1;
+                        V[Vx] = V[Vx] >> 1;
+                    }
+                    else
+                    {
+                        V[0xF] = V[Vy] & 0x1;
+                        V[Vx] = V[Vy] >> 1;
+                    }
                     break;
                 case 0x0007: //SUBN Vx, Vy
                     LOG("SUBN V%X, V%X", Vx, Vy);
@@ -176,8 +184,16 @@ void chip8::stepCycle()
                     break;
                 case 0x000E: //SHL Vx, Vy
                     LOG("SHL V%X, V%X", Vx, Vy);
-                    V[0xF] = (V[Vy] & 0x80) >> 7;
-                    V[Vx] = V[Vy] << 1;
+                    if (shift_quirk)
+                    {
+                        V[0xF] = (V[Vx] & 0x80) >> 7;
+                        V[Vx] = V[Vx] << 1;
+                    }
+                    else
+                    {
+                        V[0xF] = (V[Vy] & 0x80) >> 7;
+                        V[Vx] = V[Vy] << 1;
+                    }
                     break;
                 default:
                     ERR("0x8000: Unknown opcode 0x%X", opcode);
@@ -289,7 +305,10 @@ void chip8::stepCycle()
                     {
                         memory[I + i] = V[i];
                     }
-                    I += Vx + 1;
+                    if (!load_store_quirk)
+                    {
+                        I += Vx + 1;
+                    }
                     break;
                 case 0x0065: //LD Vx, [I]
                     LOG("LD V%X, 0x%X", Vx, I);
@@ -298,7 +317,10 @@ void chip8::stepCycle()
                         int vOffset = i - I;
                         V[vOffset] = memory[i];
                     }
-                    I += Vx + 1;
+                    if (!load_store_quirk)
+                    {
+                        I += Vx + 1;
+                    }
                     break;
                 default:
                     ERR("0x000F: Unknown opcode 0x%X", opcode);
@@ -344,4 +366,12 @@ void inline chip8::display_clear()
 {
     std::fill(gfx.begin(), gfx.end(), 0);
     drawFlag = true;
+}
+
+void chip8::setLoadStoreQuirk(bool loadStoreQuirk) {
+    load_store_quirk = loadStoreQuirk;
+}
+
+void chip8::setShiftQuirk(bool shiftQuirk) {
+    shift_quirk = shiftQuirk;
 }

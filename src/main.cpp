@@ -8,7 +8,7 @@
 
 void printUsage()
 {
-    ERR("Usage: ./yache [-df] [file]\n"
+    ERR("Usage: ./yache [-dfsl] [file]\n"
             "Example: ./yache ../roms/PONG\n");
 }
 
@@ -20,9 +20,22 @@ int main(int argc, char** argv)
 
 
     bool isDebug = false;
+    bool load_store_quirk = false;
+    bool shift_quirk = false;
     int freq = 1000;
+
+    static struct option long_options[] =
+        {
+            {"load-quirk", no_argument, 0, 'l'},
+            {"shift-quirk", no_argument, 0, 's'},
+            {"debug", no_argument, 0, 'd'},
+            {"freg", required_argument, 0, 'f'},
+            {0, 0,0,0 }
+        };
+
     int c;
-    while ((c = getopt(argc, argv, "f:d")) != -1)
+    int option_index = 0;
+    while ((c = getopt_long(argc, argv, "f:dls", long_options, &option_index)) != -1)
     {
         switch (c)
         {
@@ -31,6 +44,12 @@ int main(int argc, char** argv)
                 break;
             case 'f':
                 freq = strtoll(optarg, nullptr, 10);
+                break;
+            case 'l':
+                load_store_quirk = true;
+                break;
+            case 's':
+                shift_quirk = true;
                 break;
             case '?':
                 if (optopt == 'f')
@@ -53,8 +72,9 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
     chip8 *cpu = new chip8();
+    cpu->setLoadStoreQuirk(load_store_quirk);
+    cpu->setShiftQuirk(shift_quirk);
     cpu->loadRom(argv[optind]);
-    debugger *debug = new debugger(cpu);
 
 
     glfwInit();
@@ -74,6 +94,7 @@ int main(int argc, char** argv)
     display->init();
 
     chip8_input *input = new chip8_input(window);
+    debugger *debug = new debugger(cpu);
     if (isDebug)
     {
         debug->setContinue(false);
