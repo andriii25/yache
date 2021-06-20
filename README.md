@@ -33,8 +33,10 @@ For example using the PONG rom in the roms folder
 
 | Option        | Functionality                      |
 |---------------|------------------------------------|
-| -d            | Running the game with the debugger |
-| -f [frequency]| Set CPU frequency                  |
+| -d            | Runs the game with the debugger     |
+| -f [frequency]| Sets CPU frequency                  |
+| -s            | Enables the shift quirk             |
+| -l            | Enables the load store quirk        |
 
 ### Input
 
